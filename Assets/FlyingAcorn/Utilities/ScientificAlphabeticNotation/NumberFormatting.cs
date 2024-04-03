@@ -8,21 +8,28 @@ namespace FlyingAcorn.Utilities.ScientificAlphabeticNotation
 {
     public static class NumberFormatting
     {
-        public static string ConvertToScientificAlphabeticFormat(BigDouble number)
+        public static string ConvertToScientificAlphabeticFormat(BigDouble number, int decimals = 0, bool precisionMode = false)
         {
-            var modifiedMantissa = BigDouble.Floor(number.Mantissa * BigDouble.Pow10(number.Exponent % 3));
+            var scalingPower = precisionMode ? 3 : 0;
+            
+            var precision = number >= BigDouble.Pow10(3 + scalingPower)
+                ? number.Exponent % 3 + scalingPower
+                : number.Exponent % (3 + scalingPower);
+
+            var modifiedMantissa =
+                Math.Round(number.Mantissa, decimals + (int) precision) * Math.Pow(10, precision);
             var alphabeticExponent = "";
 
-            if (number >= BigDouble.Pow10(3) && number < BigDouble.Pow10(6))
+            if (number >= BigDouble.Pow10(3 + scalingPower) && number < BigDouble.Pow10(6 + scalingPower))
                 alphabeticExponent = "K";
 
-            if (number >= BigDouble.Pow10(6) && number < BigDouble.Pow10(9))
+            if (number >= BigDouble.Pow10(6 + scalingPower) && number < BigDouble.Pow10(9 + scalingPower))
                 alphabeticExponent = "M";
 
-            if (number >= BigDouble.Pow10(9) && number < BigDouble.Pow10(12))
+            if (number >= BigDouble.Pow10(9 + scalingPower) && number < BigDouble.Pow10(12 + scalingPower))
                 alphabeticExponent = "B";
 
-            if (number >= BigDouble.Pow10(12))
+            if (number >= BigDouble.Pow10(12 + scalingPower))
             {
                 FindAlphabeticExponent(number.Exponent, out alphabeticExponent);
             }
@@ -37,11 +44,11 @@ namespace FlyingAcorn.Utilities.ScientificAlphabeticNotation
             alphabeticExponent = DecimalToAlphabeticSystem(reductedExponent);
         }
 
-        public static string ConvertToScientificAlphabeticFormat(string number)
+        public static string ConvertToScientificAlphabeticFormat(string number, int decimals = 0, bool precisionMode = false)
         {
             var bigDouble = ConvertStringToBigDouble(number);
 
-            return ConvertToScientificAlphabeticFormat(bigDouble);
+            return ConvertToScientificAlphabeticFormat(bigDouble, decimals, precisionMode);
         }
 
         public static BigDouble ConvertStringToBigDouble(string number)
