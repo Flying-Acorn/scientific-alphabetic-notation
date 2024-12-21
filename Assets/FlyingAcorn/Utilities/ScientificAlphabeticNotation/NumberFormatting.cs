@@ -8,10 +8,11 @@ namespace FlyingAcorn.Utilities.ScientificAlphabeticNotation
 {
     public static class NumberFormatting
     {
-        public static string ConvertToScientificAlphabeticFormat(BigDouble number, int decimals = 0, bool precisionMode = false)
+        public static string ConvertToScientificAlphabeticFormat(BigDouble number, int decimals = 0,
+            bool precisionMode = false)
         {
             var scalingPower = precisionMode ? 3 : 0;
-            
+
             var precision = number >= BigDouble.Pow10(3 + scalingPower)
                 ? number.Exponent % 3 + scalingPower
                 : number.Exponent % (3 + scalingPower);
@@ -31,7 +32,7 @@ namespace FlyingAcorn.Utilities.ScientificAlphabeticNotation
 
             if (number >= BigDouble.Pow10(12 + scalingPower))
             {
-                FindAlphabeticExponent(number.Exponent, out alphabeticExponent);
+                FindAlphabeticExponent(number.Exponent - scalingPower, out alphabeticExponent);
             }
 
             return modifiedMantissa + alphabeticExponent;
@@ -44,7 +45,8 @@ namespace FlyingAcorn.Utilities.ScientificAlphabeticNotation
             alphabeticExponent = DecimalToAlphabeticSystem(reductedExponent);
         }
 
-        public static string ConvertToScientificAlphabeticFormat(string number, int decimals = 0, bool precisionMode = false)
+        public static string ConvertToScientificAlphabeticFormat(string number, int decimals = 0,
+            bool precisionMode = false)
         {
             var bigDouble = ConvertStringToBigDouble(number);
 
